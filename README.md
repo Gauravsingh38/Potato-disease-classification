@@ -1,212 +1,390 @@
-# Potato Disease Classification
+📘 Potato Disease Classification Using Deep Learning (CNN)
+End-to-End System — Data → CNN → FastAPI → Web App → Mobile Ready
+🧭 Table of Contents
 
-## Setup for Python:
+Project Overview
 
-1. Install Python ([Setup instructions](https://wiki.python.org/moin/BeginnersGuide))
+Problem Context & Motivation
 
-2. Install Python packages
+Business Use-Case
 
-```
-pip3 install -r training/requirements.txt
-pip3 install -r api/requirements.txt
-```
+Project Architecture
 
-3. Install Tensorflow Serving ([Setup instructions](https://www.tensorflow.org/tfx/serving/setup))
+Dataset Overview
 
-## Setup for ReactJS
+Data Preprocessing & Augmentation
 
-1. Install Nodejs ([Setup instructions](https://nodejs.org/en/download/package-manager/))
-2. Install NPM ([Setup instructions](https://www.npmjs.com/get-npm))
-3. Install dependencies
+TensorFlow Data Pipeline
 
-```bash
-cd frontend
-npm install --from-lock-json
-npm audit fix
-```
+CNN Model Architecture
 
-4. Copy `.env.example` as `.env`.
+Training, Evaluation & Results
 
-5. Change API url in `.env`.
+Model Saving & Versioning
 
-## Setup for React-Native app
+FastAPI Backend (main-aug.py)
 
-1. Go to the [React Native environment setup](https://reactnative.dev/docs/environment-setup), then select `React Native CLI Quickstart` tab.  
+Frontend (React.js)
 
-2. Install dependencies
+Mobile App (Future Integration - TFLite)
 
-```bash
-cd mobile-app
-yarn install
-```
+Deployment Guide
 
-  - 2.1 Only for mac users
-```bash
-cd ios && pod install && cd ../
-```
+Project Folder Structure
 
-3. Copy `.env.example` as `.env`.
+How to Run the Project
 
-4. Change API url in `.env`.
+Future Improvements
 
-## Training the Model
+Credits
 
-1. Download the data from [kaggle](https://www.kaggle.com/arjuntejaswi/plant-village).
-2. Only keep folders related to Potatoes.
-3. Run Jupyter Notebook in Browser.
+1. 📌 Project Overview
 
-```bash
-jupyter notebook
-```
+Potatoes are one of the most widely grown crops worldwide. Their productivity is significantly affected by two major leaf diseases:
 
-4. Open `training/potato-disease-training.ipynb` in Jupyter Notebook.
-5. In cell #2, update the path to dataset.
-6. Run all the Cells one by one.
-7. Copy the model generated and save it with the version number in the `models` folder.
+Early Blight
 
-## Running the API
+Late Blight
 
-### Using FastAPI
+Early detection is crucial but often not accessible to small-scale farmers.
 
-1. Get inside `api` folder
+This project solves this problem by building an AI-powered potato disease detection system using:
 
-```bash
+✔ Deep Learning (CNN)
+✔ TensorFlow/Keras
+✔ FastAPI backend
+✔ React.js web app
+✔ TFLite support for mobile
+✔ Docker-ready deployment
+
+The final system allows anyone to upload an image of a potato leaf and instantly get:
+
+Disease classification
+
+Confidence score
+
+Simple UI experience
+
+2. 🌱 Problem Context & Motivation
+
+Farmers typically rely on manual inspection of leaf conditions, which is:
+
+✘ Error-prone
+✘ Slow
+✘ Requires expertise
+
+Diseases like Late Blight can destroy entire potato fields in days.
+
+A simple smartphone-based AI system can:
+
+✔ Improve farmer decision-making
+✔ Reduce crop loss
+✔ Increase agricultural efficiency
+✔ Scale across remote regions
+
+3. 🏢 Business Use-Case
+
+Developed for AtliQ Agriculture as a real-world agritech solution:
+
+Farmers can:
+
+📸 Capture a potato leaf image
+→ Instantly receive prediction (Healthy / Early Blight / Late Blight)
+
+Organization benefits:
+
+✔ Low-cost scalable tool
+✔ Future extension to multiple crops
+✔ Can integrate into agritech platforms
+
+4. 🏗 Project Architecture
+                ┌──────────────────────┐
+                │   PlantVillage Data  │
+                └──────────┬───────────┘
+                           │
+                 Data Preprocessing
+                           │
+                 CNN Model (main-aug.py)
+                           │
+               SavedModel + Versioning
+                           │
+               FastAPI Backend (main-aug)
+                           │
+             REST API (JSON responses)
+                           │
+     ┌─────────────────────┴─────────────────────┐
+     │                                           │
+React Web App                               Mobile App (TFLite)
+
+5. 🗂 Dataset Overview
+
+Dataset used: PlantVillage (Kaggle)
+
+Classes retained:
+
+Potato___Healthy
+
+Potato___Early_Blight
+
+Potato___Late_Blight
+
+Each class contains ~1000 images.
+
+Data structure used:
+
+potato_disease/
+    ├── Potato___Early_Blight/
+    ├── Potato___Late_Blight/
+    └── Potato___Healthy/
+
+6. 🧼 Data Preprocessing & Augmentation
+Normalization
+
+All images resized to 256 × 256 × 3
+Scaled to 0–1 using TensorFlow’s Rescaling(1./255) layer.
+
+Augmentation (main-aug model)
+
+Applied using:
+
+Random Flip (horizontal + vertical)
+
+Random Rotation (0.2)
+
+Purpose:
+✔ Reduce overfitting
+✔ Create robust model
+✔ Improve generalization
+
+7. ⚙ TensorFlow Data Pipeline
+
+Built using:
+
+tf.data.Dataset
+
+image_dataset_from_directory
+
+cache()
+
+shuffle()
+
+prefetch(AUTOTUNE)
+
+Why tf.data?
+
+Efficient batch loading
+
+Optimized GPU utilization
+
+Real-time augmentation
+
+Scalable for large datasets
+
+8. 🧠 CNN Model Architecture
+
+Architecture includes:
+
+Rescaling layer
+
+6× Conv2D layers
+
+MaxPooling after each
+
+Flatten
+
+Dense(64)
+
+Dense(3) with softmax
+
+Designed to learn:
+
+✔ textures
+✔ blight patterns
+✔ shape distortions
+
+9. 📊 Training, Evaluation & Results
+
+Training:
+
+50 epochs
+
+Adam optimizer
+
+sparse_categorical_crossentropy
+
+Results:
+
+Training Accuracy: ~99%
+
+Validation Accuracy: 97–98%
+
+Test Accuracy: ~98%
+
+Model generalizes extremely well.
+
+10. 💾 Model Saving & Versioning
+
+Automatically detects latest version and saves model into:
+
+saved_models/
+    └── 1/
+        ├── model.keras
+        ├── weights.weights.h5
+
+
+Versioning ensures:
+
+✔ Traceability
+✔ Reproducibility
+✔ MLOps readiness
+
+11. ⚡ FastAPI Backend (main-aug.py)
+Your backend loads:
+Direct Keras Model + Weights
+
+Key features:
+
+/ping → Health check
+
+/predict → Image upload → Preprocessing → CNN inference
+
+Returns JSON:
+
+{
+  "class": "Late Blight",
+  "confidence": 0.982
+}
+
+
+Image preprocessing:
+
+Converts file → RGB
+
+Resizes → (256,256)
+
+Normalizes → 0–1
+
+Adds batch dimension
+
+12. 💻 Frontend (React.js)
+
+Built using:
+
+Material UI
+
+Dropzone image uploader
+
+Axios (API calls)
+
+Live preview of uploaded image
+
+Displays prediction + confidence
+
+User flow:
+
+Drag & drop leaf image
+
+React sends it to FastAPI
+
+API returns disease & confidence
+
+UI shows results cleanly
+
+13. 📱 Mobile App (Future Integration)
+
+Model conversion:
+
+✔ TensorFlow Lite (TFLite)
+✔ Optimized for real-time mobile inference
+
+Will power Android/iOS app for farmers.
+
+14. 🚀 Deployment Guide
+Local Deployment:
+
+✔ Python virtual environment
+✔ FastAPI server
+✔ React app
+
+Docker (Optional):
+
+TensorFlow Serving container
+
+Exposes port 8501
+
+Hot model reload
+
+Cloud Deployment:
+
+✔ Vercel for frontend
+✔ GCP or AWS for backend
+✔ Cloud Storage for models
+
+15. 📁 Project Folder Structure
+Potato-disease-classification/
+│
+├── api/
+│   ├── main-aug.py
+│   ├── main.py
+│   └── main-tf-serving.py
+│
+├── saved_models/
+│   └── 1/
+│       ├── model.keras
+│       └── weights.weights.h5
+│
+├── frontend/
+│   ├── src/
+│   └── public/
+│
+├── mobile-app/   (future)
+├── static/
+├── requirements.txt
+├── README.md
+└── ...
+
+16. ▶ How to Run the Project
+1️⃣ Setup environment
+python -m venv .venv
+.\.venv\Scripts\activate
+pip install -r requirements.txt
+
+2️⃣ Run FastAPI server
 cd api
-```
+python main-aug.py
 
-2. Run the FastAPI Server using uvicorn
 
-```bash
-uvicorn main:app --reload --host 0.0.0.0
-```
+Server runs at:
+👉 http://localhost:8000
 
-3. Your API is now running at `0.0.0.0:8000`
+Docs UI:
+👉 http://localhost:8000/docs
 
-### Using FastAPI & TF Serve
-
-1. Get inside `api` folder
-
-```bash
-cd api
-```
-
-2. Copy the `models.config.example` as `models.config` and update the paths in file.
-3. Run the TF Serve (Update config file path below)
-
-```bash
-docker run -t --rm -p 8501:8501 -v C:/Code/potato-disease-classification:/potato-disease-classification tensorflow/serving --rest_api_port=8501 --model_config_file=/potato-disease-classification/models.config
-```
-
-4. Run the FastAPI Server using uvicorn
-   For this you can directly run it from your main.py or main-tf-serving.py using pycharm run option (as shown in the video tutorial)
-   OR you can run it from command prompt as shown below,
-
-```bash
-uvicorn main-tf-serving:app --reload --host 0.0.0.0
-```
-
-5. Your API is now running at `0.0.0.0:8000`
-
-## Running the Frontend
-
-1. Get inside `api` folder
-
-```bash
+3️⃣ Run React App
 cd frontend
-```
-
-2. Copy the `.env.example` as `.env` and update `REACT_APP_API_URL` to API URL if needed.
-3. Run the frontend
-
-```bash
-npm run start
-```
-
-## Running the app
-
-1. Get inside `mobile-app` folder
-
-```bash
-cd mobile-app
-```
-
-2. Copy the `.env.example` as `.env` and update `URL` to API URL if needed.
-
-3. Run the app (android/iOS)
-
-```bash
-npm run android
-```
-
-or
-
-```bash
-npm run ios
-```
-
-4. Creating public ([signed APK](https://reactnative.dev/docs/signed-apk-android))
+npm install
+npm start
 
 
-## Creating the TF Lite Model
+Open:
+👉 http://localhost:3000
 
-1. Run Jupyter Notebook in Browser.
+17. 🌟 Future Improvements
 
-```bash
-jupyter notebook
-```
+Add more crops (tomato, cotton, maize)
 
-2. Open `training/tf-lite-converter.ipynb` in Jupyter Notebook.
-3. In cell #2, update the path to dataset.
-4. Run all the Cells one by one.
-5. Model would be saved in `tf-lite-models` folder.
+Add bounding-box leaf detection
 
-## Deploying the TF Lite on GCP
+On-device inference with TFLite
 
-1. Create a [GCP account](https://console.cloud.google.com/freetrial/signup/tos?_ga=2.25841725.1677013893.1627213171-706917375.1627193643&_gac=1.124122488.1627227734.Cj0KCQjwl_SHBhCQARIsAFIFRVVUZFV7wUg-DVxSlsnlIwSGWxib-owC-s9k6rjWVaF4y7kp1aUv5eQaAj2kEALw_wcB).
-2. Create a [Project on GCP](https://cloud.google.com/appengine/docs/standard/nodejs/building-app/creating-project) (Keep note of the project id).
-3. Create a [GCP bucket](https://console.cloud.google.com/storage/browser/).
-4. Upload the potatoes.h5 model in the bucket in the path `models/potatos.h5`.
-5. Install Google Cloud SDK ([Setup instructions](https://cloud.google.com/sdk/docs/quickstarts)).
-6. Authenticate with Google Cloud SDK.
+Multilingual farmer UI
 
-```bash
-gcloud auth login
-```
+Better augmentation (cutmix, color jitter)
 
-7. Run the deployment script.
+Integrate with farmer advisory system
 
-```bash
-cd gcp
-gcloud functions deploy predict_lite --runtime python38 --trigger-http --memory 512 --project project_id
-```
+18. 👨‍💻 Credits
 
-8. Your model is now deployed.
-9. Use Postman to test the GCF using the [Trigger URL](https://cloud.google.com/functions/docs/calling/http).
-
-Inspiration: https://cloud.google.com/blog/products/ai-machine-learning/how-to-serve-deep-learning-models-using-tensorflow-2-0-with-cloud-functions
-
-## Deploying the TF Model (.h5) on GCP
-
-1. Create a [GCP account](https://console.cloud.google.com/freetrial/signup/tos?_ga=2.25841725.1677013893.1627213171-706917375.1627193643&_gac=1.124122488.1627227734.Cj0KCQjwl_SHBhCQARIsAFIFRVVUZFV7wUg-DVxSlsnlIwSGWxib-owC-s9k6rjWVaF4y7kp1aUv5eQaAj2kEALw_wcB).
-2. Create a [Project on GCP](https://cloud.google.com/appengine/docs/standard/nodejs/building-app/creating-project) (Keep note of the project id).
-3. Create a [GCP bucket](https://console.cloud.google.com/storage/browser/).
-4. Upload the tf .h5 model generate in the bucket in the path `models/potato-model.h5`.
-5. Install Google Cloud SDK ([Setup instructions](https://cloud.google.com/sdk/docs/quickstarts)).
-6. Authenticate with Google Cloud SDK.
-
-```bash
-gcloud auth login
-```
-
-7. Run the deployment script.
-
-```bash
-cd gcp
-gcloud functions deploy predict --runtime python38 --trigger-http --memory 512 --project project_id
-```
-
-8. Your model is now deployed.
-9. Use Postman to test the GCF using the [Trigger URL](https://cloud.google.com/functions/docs/calling/http).
-
-Inspiration: https://cloud.google.com/blog/products/ai-machine-learning/how-to-serve-deep-learning-models-using-tensorflow-2-0-with-cloud-functions
-
+Developed by: Gaurav Singh
+Domain: Deep Learning, MLOps, Agritech
+Architecture: TensorFlow + FastAPI + React.js
