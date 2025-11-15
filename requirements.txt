@@ -1,0 +1,11 @@
+tensorflow
+fastapi
+uvicorn
+python-multipart
+pillow
+tensorflow-serving-api
+matplotlib
+numpy
+notebook
+tensorflow-addons
+tensorflow-model-optimization
